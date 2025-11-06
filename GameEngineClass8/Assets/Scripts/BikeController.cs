@@ -39,6 +39,8 @@ public class BikeController : Subject
         _bikeStateContext.Transition(_stopState);
     }
 
+    
+
 
     void OnEnable() // Attaches observers when enabled
     {

@@ -1,12 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
-public class HitDetect : Observer
+public class HitDetect : MonoBehaviour
 {
-
-    private BikeController _bikeController;
-    [SerializeField] private float speed;
+    public IObjectPool<HitDetect> Pool { get; set; }
+    [SerializeField] private BikeController _bikeController;
+    [SerializeField] private float speed = 20f;
+    void OnEnable() // When the drone activates, calls the Attack Player and Self Destruct functions
+    {
+        
+        StartCoroutine(SelfDestruct());
+    }
     void Start()
     {
         _bikeController = (BikeController)FindObjectOfType(typeof(BikeController));
@@ -20,20 +26,25 @@ public class HitDetect : Observer
     {
         if (_bikeController)
         {
-            if (collision.gameObject.CompareTag("Enemy"))
+            if (collision.gameObject.tag == "Player")
             {
                 _bikeController.TakeDamage(15.0f);
+               
+                ReturnToPool();
             }
-           
         }
     }
-
-
-    public override void Notify(Subject subject) 
+    private void ReturnToPool() // Returns itself back to the pool
     {
-        if (!_bikeController) 
-        {
-            _bikeController = subject.GetComponent<BikeController>();
-        }
+        Pool.Release(this);
     }
+    IEnumerator SelfDestruct() // After watiting a set amount of time, the drone takes max health
+    {
+        yield return new WaitForSeconds(5);
+        
+        ReturnToPool();
+    }
+
+
+
 }
