@@ -85,4 +85,8 @@ public class BikeController : Subject
         if (fuel < 0)
             Destroy(gameObject);
     }
+    public void ResetPosition()
+    {
+        transform.position = new Vector3(0.0f, 0.0f, 0.0f);
+    }
 }
